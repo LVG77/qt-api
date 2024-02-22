@@ -10,7 +10,9 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License"
 ]
 dependencies = [
-
+    "httpx",
+    "pydantic",
+    "PyYAML"
 ]
 
 [build-system]
@@ -26,3 +28,4 @@ CI = "https://github.com/LVG77/qt-api/actions"
 
 [project.optional-dependencies]
 test = ["pytest"]
+dev  = ["pytest", "ipykernel"]
