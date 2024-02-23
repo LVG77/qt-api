@@ -7,3 +7,7 @@ def sample_creds_data():
             'expires_in': 1800,
             'refresh_token': '123abc',
             'token_type': 'some'}
+
+@pytest.fixture
+def mock_access_code():
+    return "mock_access_code"

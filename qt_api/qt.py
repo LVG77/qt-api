@@ -84,32 +84,28 @@ class Questrade:
         # save access token to file
         save_creds(self.access_token)
     
-    def refresh_access_token(self, from_json:bool = False, json_path:str = "access_token.json")->None:
-        "Refresh access token"
-        if from_json:
-            old_access_token = read_access_token_json(json_path)
-        else:
-            old_access_token = self.access_token
+    def refresh_access_token(self)->None:
+        "Refresh access token before it has expired"
+        old_access_token = self.access_token
         
-        url = TOKEN_URL + old_access_token["refresh_token"]
+        url = TOKEN_URL + old_access_token.refresh_token
         data = httpx.get(url)
         data.raise_for_status()
         r = data.json()
         # validate reponse
-        validate_dict(r, TokenDict)
-        self.access_token = r
-        self.headers = {"Authorization": self.access_token["token_type"] 
-                        + " " + self.access_token["access_token"]}
+        validate_dict(r)
+        self.access_token = QTTokenFile(**r)
+        self.headers = {"Authorization": self.access_token.token_type 
+                        + " " + self.access_token.access_token}
         # save access token to file
-        with open(json_path, "w") as f:
-            json.dump(self.access_token, f)
-            print("Token refreshed successfully")
+        save_creds(self.access_token)
+        print("Token refreshed successfully")
 
 
     def _send_request(self, endpoint:str, params: dict[str, any] = None)->dict[str,any]:
         "Send API requests"
         if self.access_token is not None:
-            url = self.access_token["api_server"] + "v1/" + endpoint
+            url = self.access_token.api_server + "v1/" + endpoint
         else:
             raise Exception("Access token not set ...")
         r = self.client.get(url, headers=self.headers, params=params)
