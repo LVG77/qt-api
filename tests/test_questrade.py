@@ -36,3 +36,16 @@ def test_send_request(mock_client, mock_get_access_token, sample_creds_data):
     assert mock_client.get.call_args[1]["params"] == {"some": "params"}
     assert req == {"key1": "value1", "key2": "value2"}
     
+@mock.patch('qt_api.qt.Questrade._get_access_token')
+@mock.patch('httpx.get')
+@mock.patch('qt_api.qt.save_creds')
+@mock.patch('qt_api.qt.validate_dict')
+def test_refresh_access_token(mock_validate_dict, mock_save_creds, mock_get, mock_get_access_token, sample_creds_data):
+    qt = Questrade()
+    qt.access_token = QTTokenFile(**sample_creds_data)
+    mock_get.raise_for_status.return_value = None
+    mock_get.return_value.json.return_value = sample_creds_data
+    req = qt.refresh_access_token()
+    assert mock_get.call_args[0][0] == TOKEN_URL + qt.access_token.refresh_token
+    mock_validate_dict.assert_called_once_with(sample_creds_data)
+    mock_save_creds.assert_called_once_with(QTTokenFile(**sample_creds_data))
