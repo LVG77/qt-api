@@ -27,14 +27,18 @@ def user_dir():
     return path
 
 
-def save_creds(creds: QTTokenFile):
+def save_creds(creds: QTTokenFile, acct_flag:str = None):
     creds_dict = creds.model_dump()
-    path = user_dir() / "creds.yaml"
+    creds_name = f"creds_{acct_flag}.yaml" if acct_flag else "creds.yaml"
+    path = user_dir() / creds_name
     path.write_text(yaml.dump(creds_dict, indent=4))
 
 
-def load_creds()->QTTokenFile:
-    path = user_dir() / "creds.yaml"
+def load_creds(acct_flag:str = None)->QTTokenFile:
+    if acct_flag:
+        path = user_dir() / f"creds_{acct_flag}.yaml"
+    else:
+        path = user_dir() / "creds.yaml"
     if not path.exists():
         raise FileNotFoundError("QT credentials file not found!\nProdive new access code!")
     creds = yaml.safe_load(path.read_text())
@@ -56,12 +60,13 @@ def validate_dict(input_dict):
 
 
 class Questrade:
-    def __init__(self, access_code:str = None):
+    def __init__(self, access_code:str = None, acct_flag:str = None):
         self.access_code = access_code
+        self.acct_flag = acct_flag
         self.headers = None
         self.client = httpx.Client()
         if access_code is None:
-            self.access_token = load_creds()
+            self.access_token = load_creds(self.acct_flag)
             self.headers = {"Authorization": self.access_token.token_type 
                             + " " + self.access_token.access_token}
         else:

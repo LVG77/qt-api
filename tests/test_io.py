@@ -18,6 +18,20 @@ def test_save_creds(tmp_path, sample_creds_data, monkeypatch):
     saved_data = yaml.safe_load(expected_path.read_text())
     assert saved_data == sample_creds_data
 
+def test_save_creds_acct(tmp_path, sample_creds_data, monkeypatch):
+    # Override user_dir to return the temporary directory path
+    monkeypatch.setattr("qt_api.qt.user_dir", lambda: tmp_path)
+
+    creds = QTTokenFile(**sample_creds_data)
+    save_creds(creds, acct_flag="some_flag")
+
+    expected_path = tmp_path / "creds_some_flag.yaml"
+    assert expected_path.exists()
+
+    # Read the saved YAML file and check its content
+    saved_data = yaml.safe_load(expected_path.read_text())
+    assert saved_data == sample_creds_data
+
 def test_load_creds(tmp_path, sample_creds_data, monkeypatch):
     # Override user_dir to return the specific directory path
     monkeypatch.setattr("qt_api.qt.user_dir", lambda: tmp_path)
@@ -28,6 +42,18 @@ def test_load_creds(tmp_path, sample_creds_data, monkeypatch):
 
     # Load the credentials and check if they match the saved data
     loaded_creds = load_creds()
+    assert loaded_creds == creds
+
+def test_load_creds_acct(tmp_path, sample_creds_data, monkeypatch):
+    # Override user_dir to return the specific directory path
+    monkeypatch.setattr("qt_api.qt.user_dir", lambda: tmp_path)
+
+    # Save sample credentials to a YAML file
+    creds = QTTokenFile(**sample_creds_data)
+    save_creds(creds, acct_flag="some_flag")
+
+    # Load the credentials and check if they match the saved data
+    loaded_creds = load_creds(acct_flag="some_flag")
     assert loaded_creds == creds
 
 def test_validate_dict_valid_input(sample_creds_data):

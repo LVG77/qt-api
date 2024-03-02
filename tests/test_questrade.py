@@ -1,5 +1,4 @@
 import pytest
-# from unittest.mock import patch, MagicMock, Mock
 from unittest import mock
 from qt_api.qt import Questrade, TOKEN_URL, QTTokenFile, save_creds, validate_dict
 
@@ -18,6 +17,13 @@ def test_get_access_token(mock_validate_dict, mock_save_creds, mock_get, mock_ac
     mock_get.assert_called_once_with(TOKEN_URL + mock_access_code)
     mock_validate_dict.assert_called_once_with(sample_creds_data)
     mock_save_creds.assert_called_once_with(QTTokenFile(**sample_creds_data))
+    assert questrade.headers == {"Authorization": "some abc"}
+
+@mock.patch('qt_api.qt.load_creds')
+def test_create_qt(mock_load_creds, sample_creds_data):
+    mock_load_creds.return_value = QTTokenFile(**sample_creds_data)
+    questrade = Questrade(acct_flag="xx")
+    mock_load_creds.assert_called_once_with("xx")
     assert questrade.headers == {"Authorization": "some abc"}
 
 @mock.patch('qt_api.qt.Questrade._get_access_token')
