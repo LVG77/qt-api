@@ -30,7 +30,7 @@ def test_create_qt(mock_load_creds, sample_creds_data):
 @mock.patch('httpx.Client')
 def test_send_request(mock_client, mock_get_access_token, sample_creds_data):
     mock_get_access_token.return_value = QTTokenFile(**sample_creds_data)
-    qt = Questrade()
+    qt = Questrade(access_code="xxxv1")
     qt.access_token = QTTokenFile(**sample_creds_data)
     assert mock_get_access_token.called_once
 
@@ -47,7 +47,7 @@ def test_send_request(mock_client, mock_get_access_token, sample_creds_data):
 @mock.patch('qt_api.qt.save_creds')
 @mock.patch('qt_api.qt.validate_dict')
 def test_refresh_access_token(mock_validate_dict, mock_save_creds, mock_get, mock_get_access_token, sample_creds_data):
-    qt = Questrade()
+    qt = Questrade(access_code="xxxv1")
     qt.access_token = QTTokenFile(**sample_creds_data)
     mock_get.raise_for_status.return_value = None
     mock_get.return_value.json.return_value = sample_creds_data
