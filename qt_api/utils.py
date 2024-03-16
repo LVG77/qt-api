@@ -1,11 +1,23 @@
 from datetime import datetime, timedelta
-from qt import Questrade
+from qt_api.qt import Questrade
+
 
 
 def generate_date_pairs(n_pairs:int, time_delta:int = 30, start_date:str = None)->list[tuple]:
+    """
+    Generate date pairs based on the given number of pairs, time delta, and start date.
+    
+    Args:
+        n_pairs (int): The number of date pairs to generate.
+        time_delta (int, optional): The time difference in days between each pair. Defaults to 30.
+        start_date (str, optional): The start date for generating the pairs. Defaults to None.
+    
+    Returns:
+        list[tuple]: A list of tuples containing date pairs in the format (current_date, next_date).
+    """
     date_pairs = []
     if start_date:
-        current_date = start_date
+        current_date = datetime.strptime(start_date, "%Y-%m-%d").date()
     else:
         current_date = datetime.now()  # Start from the current date
 
@@ -26,4 +38,3 @@ def get_acct_activities(qt: Questrade, acct_no: int, n: int, verbose: bool = Tru
         r = qt.get_activities(acct_no, d1, d2)
         activities.extend(r)
     return activities
-
