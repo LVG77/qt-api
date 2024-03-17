@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timedelta
 from qt_api.qt import Questrade
 
@@ -29,12 +30,29 @@ def generate_date_pairs(n_pairs:int, time_delta:int = 30, start_date:str = None)
     return date_pairs
 
 
-def get_acct_activities(qt: Questrade, acct_no: int, n: int, verbose: bool = True)->list[dict]:
-    "Get activities for account `acct_no` for `n` consecutive 30-day periods."
+def get_acct_activities(qt: Questrade, acct_no: int, n: int, trottle: float = None, verbose: bool = True) -> list[dict]:
+    """
+    Get activities for account `acct_no` for `n` consecutive 30-day periods.
+    
+    Args:
+        qt (Questrade): The Questrade API client.
+        acct_no (int): The account number.
+        n (int): The number of 30-day periods to get activities for.
+        trottle (float, optional): The amount of time in seconds to wait between
+            API requests. Defaults to None.
+        verbose (bool, optional): Whether to print a message for each period
+            being retrieved. Defaults to True.
+    
+    Returns:
+        list[dict]: A list of activity records.
+    """
+
     date_pairs = generate_date_pairs(n_pairs=n)
     activities = []
     for d2,d1 in date_pairs:
         print(f"Getting data for {d1} to {d2} period")
         r = qt.get_activities(acct_no, d1, d2)
         activities.extend(r)
+        if trottle:
+            time.sleep(trottle)
     return activities

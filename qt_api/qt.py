@@ -60,6 +60,25 @@ def validate_dict(input_dict):
 
 
 class Questrade:
+    """A class for interacting with the Questrade API.
+
+    This class provides methods for getting account information, positions,
+    and executions, as well as retrieving quotes for tickers. The class can
+    also be used to refresh the access token if it has expired.
+
+    To use this class, either an access code or an access token must be provided.
+    If an access code is provided, the class will use it to generate and save
+    an access token to a file in the user's home directory. If an access token
+    is provided, it will be used instead of generating one from an access code.
+
+    Args:
+        access_code (str): The access code for generating an access token.
+            If not provided, the class will try to load an access token from
+            a file in the user's home directory.
+        acct_flag (str): A unique identifier for the account. This will be used
+            when saving the access token to a file. If not provided, the
+            access token will be saved to a file named "creds.yaml".
+    """
     def __init__(self, access_code:str = None, acct_flag:str = None):
         self.access_code = access_code
         self.acct_flag = acct_flag
@@ -87,7 +106,7 @@ class Questrade:
         self.headers = {"Authorization": self.access_token.token_type 
                         + " " + self.access_token.access_token}
         # save access token to file
-        save_creds(self.access_token)
+        save_creds(self.access_token, self.acct_flag)
     
     def refresh_access_token(self)->None:
         "Refresh access token before it has expired"
@@ -103,7 +122,7 @@ class Questrade:
         self.headers = {"Authorization": self.access_token.token_type 
                         + " " + self.access_token.access_token}
         # save access token to file
-        save_creds(self.access_token)
+        save_creds(self.access_token, self.acct_flag)
         print("Token refreshed successfully")
 
 

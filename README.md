@@ -11,11 +11,33 @@ Python wrapper for Questrade API
 
 Install this library using `pip`:
 ```bash
+# not released yet
 pip install qt-api
 ```
 ## Usage
 
-Usage instructions go here.
+Use access code from Questrade API.
+Also optionally you can use acct_flag to create account-specific credentials file.
+
+```python
+from qt_api.qt import Questrade
+
+qt = Questrade(access_code="xxx", acct_flag="zz")
+```
+
+Optionally, you can refresh access token like so:
+```python
+qt.refresh_access_token()
+```
+
+Then you can use any of the provided methods. For example to get a list of all accounts:
+```python
+accounts = qt.get_account()
+```
+... or to get a quote for a list of symbols:
+```python
+quotes = qt.get_symbol_quote(symbols=["AAPL", "MSFT"])
+```
 
 ## Development
 
