@@ -137,7 +137,7 @@ class Questrade:
         r.raise_for_status()
         return r.json()
 
-    def get_symbols_quote(self, tickers:Union[str|list[str]])->list[dict]:
+    def get_symbols_quote(self, tickers:Union[str,list[str]])->list[dict]:
         "Get quote of single ticker or list of tickers"
         if isinstance(tickers, str):
             tickers = [tickers]
