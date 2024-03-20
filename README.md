@@ -11,7 +11,6 @@ Python wrapper for Questrade API
 
 Install this library using `pip`:
 ```bash
-# not released yet
 pip install qt-api
 ```
 ## Usage
