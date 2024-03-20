@@ -50,7 +50,7 @@ def get_acct_activities(qt: Questrade, acct_no: int, n: int, trottle: float = No
     date_pairs = generate_date_pairs(n_pairs=n)
     activities = []
     for d2,d1 in date_pairs:
-        print(f"Getting data for {d1} to {d2} period")
+        if verbose: print(f"Getting data for {d1} to {d2} period")
         r = qt.get_activities(acct_no, d1, d2)
         activities.extend(r)
         if trottle:

@@ -178,3 +178,7 @@ class Questrade:
         the following keys: perCurrencyBalances, combinedBalances, sodPerCurrencyBalances,
         and sodCombinedBalances."""
         return self._send_request(f"accounts/{account}/balances")
+    
+    def get_time(self)->dict[str, any]:
+        """Retive current server time. Use it to check connectivity."""
+        return self._send_request("time")
