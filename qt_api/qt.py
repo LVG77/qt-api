@@ -84,7 +84,7 @@ class Questrade:
         self.access_code = access_code
         self.acct_flag = acct_flag
         self.headers = None
-        self.client = httpx.Client()
+        self.client = httpx.Client(timeout=10.0)
         if access_code is None:
             self.access_token = load_creds(self.acct_flag)
             self.headers = {"Authorization": self.access_token.token_type 
