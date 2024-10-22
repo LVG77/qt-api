@@ -160,7 +160,7 @@ class Questrade:
     def _send_request(self, endpoint:str, params: dict[str, any] = None)->dict[str,any]:
         "Send API requests"
         if self.access_token is not None:
-            if check_for_expiration(f"creds_{self.acct_flag}.yaml", self.access_token.expires_in):
+            if check_for_expiration(user_dir() / f"creds_{self.acct_flag}.yaml", self.access_token.expires_in):
                 self.refresh_access_token()
             url = self.access_token.api_server + "v1/" + endpoint
         else:
