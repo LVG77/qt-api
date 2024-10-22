@@ -1,7 +1,7 @@
 from typing import Union
 from pathlib import Path
+import time
 import yaml
-import json
 import httpx
 import pydantic
 from pydantic import BaseModel
@@ -58,6 +58,36 @@ def validate_dict(input_dict):
         msg = "A validation error occurred:\n"
         msg += render_errors(ex.errors())
         raise ValueError(msg)
+
+
+def check_for_expiration(yaml_path:str, time_threshold:int = 1800):
+    """
+    Check if specified time has passed since last modification of the file.
+    
+    Args:
+        yaml_path (str): Path to the YAML file to check
+        time_threshold (int): Time threshold in seconds (default 1800)
+    
+    Returns:
+        bool: True if refresh was triggered, False otherwise
+    """
+    try:
+        # Convert to Path object
+        file_path = Path(yaml_path)
+        
+        # Get the last modification time of the file
+        last_modified = file_path.stat().st_mtime
+        
+        current_time = time.time()
+        time_difference = current_time - last_modified
+        if time_difference >= time_threshold:
+            return True
+            
+        return False
+        
+    except FileNotFoundError:
+        print(f"Error: File {file_path} not found")
+        return False
 
 
 class Questrade:
@@ -130,6 +160,8 @@ class Questrade:
     def _send_request(self, endpoint:str, params: dict[str, any] = None)->dict[str,any]:
         "Send API requests"
         if self.access_token is not None:
+            if check_for_expiration(f"creds_{self.acct_flag}.yaml", self.access_token.expires_in):
+                self.refresh_access_token()
             url = self.access_token.api_server + "v1/" + endpoint
         else:
             raise Exception("Access token not set ...")

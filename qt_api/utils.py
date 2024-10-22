@@ -1,8 +1,7 @@
 import time
+from pathlib import Path
 from datetime import datetime, timedelta
 from qt_api.qt import Questrade
-
-
 
 def generate_date_pairs(n_pairs:int, time_delta:int = 30, start_date:str = None)->list[tuple]:
     """

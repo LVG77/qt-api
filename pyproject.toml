@@ -1,6 +1,6 @@
 [project]
 name = "qt-api"
-version = "0.2.3"
+version = "0.2.4"
 description = "Python wrapper for Questrade API"
 readme = "README.md"
 requires-python = ">=3.8"
